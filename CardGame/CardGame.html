@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+<script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
+
+<head>
+    <title>My project</title>
+    <meta charset="UTF-8">
+
+</head>
+<!--#00ff00-->
+
+<!--
+	div#cardTable {
+		background: #008000;
+		border: #999 1px solid;
+		width:800px;
+		height:540px;
+		padding:24px;
+		margin:0px auto;
+
+	}
+	
+	canvas#cardTable {
+		background: #008000;
+		border: #999 1px solid;
+		
+
+	}
+	-->
+
+
+
+
+<style type="text/css">
+    html,
+    body {
+        background: url(casino_generic_background4.jpg) no-repeat;
+        text-align: center;
+
+    }
+
+    #countDown {
+        background-color: #419D78;
+        color: #EFD0CA;
+        font-size: 20px;
+        text-align: center;
+    }
+
+    h1 {
+        color: #FFF;
+    }
+
+    canvas {
+        background-color: #FFF;
+    }
+
+
+    div#cardTable {
+        background: #008000;
+        border: #999 1px solid;
+        width: 800px;
+        height: 540px;
+        padding: 24px;
+        margin: 0px auto;
+
+    }
+
+    div#cardTable>div {
+        background: url(card.jpg) no-repeat;
+        background-size: auto 120%;
+
+        border: #000 1px solid;
+        width: 45px;
+        height: 60px;
+        float: left;
+        margin: 10px;
+        padding: 20px;
+        font-size: 64px;
+        cursor: pointer;
+        text-align: center;
+    }
+</style>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+
+
+<body>
+
+
+    <div id=d iv1>
+
+
+        <script type="text/javascript"></script>
+
+        <h1>Click on a Card to Begin Playing</h1>
+
+        <div id="countDown">Time left = <span id="timer"></span></div>
+
+        <div id="cardTable"></div>
+        <script>
+            //newGame();
+        </script>
+
+    </div>
+
+    <a href="casinoChips.html">Click here to cash out!</a>
+
+
+</body>
+
+<script>
+    var cardArray = ['A', 'A', '2', '2', '3', '3', '4', '4', '5', '5', '6', '6', '7', '7', '8', '8', '9', '9', '10', '10', 'J', 'J', 'Q', 'Q', 'K', 'K'];
+    var cardValues = [];
+    var cardId = [];
+    var faceUpCards = 0;
+
+    //shuffle method
+    Array.prototype.cardShuffle = function() {
+        var i = this.length,
+            j, temp;
+        while (--i > 0) {
+            j = Math.floor(Math.random() * (i + 1));
+            temp = this[j];
+            this[j] = this[i];
+            this[i] = temp;
+        } //end while
+    } //end shuffle
+
+    //new game
+    function newGame() {
+        console.log("hello");
+        faceUpCards = 0;
+        var output = '';
+        cardArray.cardShuffle();
+        var i;
+        for (i = 0; i < cardArray.length; i++) {
+            console.log(i);
+            output += '<div id = "card_ ' + i + '" onclick = "turnCard(this,\'' + cardArray[i] + '\')"></div>'
+        } //end for
+        document.getElementById('cardTable').innerHTML = output;
+
+
+    } //end new game function
+
+    document.addEventListener('load', newGame());
+
+    function turnCard(card, value) {
+        if (card.innerHTML == "" && cardValues.length < 2) {
+            //card background is white
+            card.style.background = '#FFF';
+            //put the value of cardArray[i] into the card
+            card.innerHTML = value;
+            if (cardValues.length == 0) {
+                //console.log("cadrvalues length == 0");
+                //insert value into cardValues array
+                cardValues.push(value);
+                console.log(cardValues[0]);
+                cardId.push(card.id);
+                console.log(cardValues.length);
+                //console.log("cadrvalues length == 1");
+                //turnCard (card, value)
+            } //end if
+            //else if for the second card clicked
+            else if (cardValues.length == 1) {
+                //insert value into cardValues array
+
+                //console.log("cardvalues.length == 1");
+                cardValues.push(value);
+                console.log(cardValues[1]);
+                cardId.push(card.id);
+                if (cardValues[0] == cardValues[1]) {
+                    faceUpCards += 2;
+                    //clear arrays
+                    cardValues = [];
+                    cardId = [];
+
+                    //if the whole table is face up
+                    if (faceUpCards == cardArray.length) {
+                        //add in motion graphics here
+                        alert("Game over!");
+                        document.getElementById('cardTable').innerHTML = "";
+                        document.getElementById('timer').innerHTML = 03 + ":" + 00;
+                        startTimer();
+                        //generate new game
+                        newGame();
+                        //casinoChips();
+                    } //end if
+                } //end if
+                //flip the cards back
+                else {
+                    function turnOver() {
+                        //turn both cards back over
+                        var card1 = document.getElementById(cardId[0]);
+                        var card2 = document.getElementById(cardId[1]);
+                        card1.style.background = ' url(card.jpg) no-repeat';
+                        //card1.style.background-size = 'auto 120%';
+                        card2.style.background = ' url(card.jpg) no-repeat';
+                        card1.innerHTML = "";
+                        card2.innerHTML = "";
+                        //clear arrays
+                        cardValues = [];
+                        cardId = [];
+                    } //end 
+                    //to leave a gap before cards are turned back
+                    setTimeout(turnOver, 700);
+                    console.log("turn");
+
+                } //end if
+
+
+
+
+            } //end else if
+
+
+        } //end if
+
+    } //end turnCard function
+
+    // adapted from https://codepen.io/ishanbakshi/pen/pgzNMv
+
+    document.getElementById('timer').innerHTML = 03 + ":" + 00;
+    startTimer();
+
+    function startTimer() {
+        //document.getElementById('timer').innerHTML = 03 + ":" + 00;
+        var presentTime = document.getElementById('timer').innerHTML;
+        var timeArray = presentTime.split(/[:]+/);
+        var m = timeArray[0];
+        var s = checkSecond((timeArray[1] - 1));
+        if (s == 59) {
+            m = m - 1
+        }
+        if (m == 0 && s == 0) {
+            alert('Time is up!')
+            newGame();
+            document.getElementById('timer').innerHTML = 03 + ":" + 00;
+            startTimer();
+        }
+
+        document.getElementById('timer').innerHTML =
+            m + ":" + s;
+        setTimeout(startTimer, 1000);
+    }
+
+    function checkSecond(sec) {
+        if (sec < 10 && sec >= 0) {
+            sec = "0" + sec
+        }; // add zero in front of numbers < 10
+        if (sec < 0) {
+            sec = "59"
+        };
+        return sec;
+    }
+</script>
+
+</html>

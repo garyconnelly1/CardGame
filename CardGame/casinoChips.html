@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+<script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
+
+<head>
+    <title>My project</title>
+    <meta charset="UTF-8">
+
+    <style type="text/css">
+        html,
+        body {
+            background: url(casino_generic_background4.jpg) no-repeat;
+            text-align: center;
+
+        }
+
+        h1 {
+            color: #FFF;
+        }
+
+
+
+        canvas {
+            border: 1px solid rgb(11, 167, 32);
+            background-color: #008000;
+            padding-left: 0;
+            padding-right: 0;
+            margin-left: auto;
+            margin-right: auto;
+            display: block;
+        }
+    </style>
+
+</head>
+
+<body>
+    <h1>Congratulations!!! Here are your chips</h1>
+
+
+    <canvas id="canvas" width="800" height="540"></canvas>
+
+
+    <script type="text/javascript">
+        var canvas = document.getElementById("canvas");
+        // Get a 2D context for the canvas.
+        var ctx = canvas.getContext("2d");
+        //casino chips
+        casinoChips();
+
+        function casinoChips() {
+
+
+            //class ball
+            class Ball {
+                constructor(x, y, r, xVel, yVel, mass) {
+                    this.x = x;
+                    this.y = y;
+                    this.r = r;
+                    this.xVel = xVel;
+                    this.yVel = yVel;
+                    this.mass = mass;
+                    this.slices = 5;
+                    this.s = 1; //spin variable
+                } //end constructor
+
+
+
+
+                //draw ball function
+                drawBall() {
+                    // console.log("inside drawBall");
+                    //draw pizza outline
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.r, 0, 2 * Math.PI, false);
+                    this.setColour("#4286f4");
+                    ctx.lineWidth = 2;
+                    ctx.strokeStyle = 'white';
+                    ctx.stroke();
+                    //loop to draw slices
+                    var count;
+                    for (count = 0; count < this.slices; count++) {
+                        this.newX = this.r * Math.cos((count * 2 * Math.PI) / this.slices + this.s) + this.x;
+                        this.newY = this.r * Math.sin((count * 2 * Math.PI) / this.slices + this.s) + this.y;
+                        ctx.moveTo(this.newX, this.newY)
+                        ctx.lineTo(this.x, this.y);
+                        ctx.closePath();
+                        ctx.stroke();
+                    } //for
+                } //end draw
+
+
+                //set color
+                setColour(col) {
+                    ctx.fillStyle = col;
+                    //ctx.fillStyle = "rgb(11, 167, 32)";
+                    ctx.fill();
+                } //end set color
+
+
+                //method to move ball
+                moveBall() {
+                    //console.log("inside moveBall");
+                    // Update the y location.
+                    this.y += this.yVel;
+                    //console.log(ball.yvol);
+                    this.x += this.xVel;
+                    this.drawBall();
+                    //this.setColour();
+                    // If the ball hits the bottom of the canvas.
+                    if (this.y >= canvas.height - this.r || this.y <= this.r) {
+                        // Stop the ball.
+                        this.yVel = this.yVel * -1;
+                    }
+                    if (this.x >= canvas.width - this.r || this.x <= this.r) {
+                        // Stop the ball.
+                        this.xVel = this.xVel * -1;
+                    }
+                } //end move ball
+
+                rotate() {
+                    this.s += 10;
+                    this.moveBall();
+                } //rotate
+
+
+
+            } //end ball class
+
+            //draw the chip
+            const b1 = new Ball(50, 50, 30, 2, 2, 10);
+            const b2 = new Ball(400, 300, 30, 2, 2, 10);
+            const b3 = new Ball(200, 200, 30, 2, 2, 10);
+            const b4 = new Ball(700, 260, 30, 2, 2, 10);
+            const b5 = new Ball(150, 500, 30, 2, 2, 10);
+
+
+
+
+            //function to repeat
+            function step() {
+                //console.log("inside step");
+
+                ctx.clearRect(0, 0, 900, 600);
+                //b1.moveBall();
+
+                b1.rotate();
+                b2.rotate();
+                b3.rotate();
+                b4.rotate();
+                b5.rotate();
+                ////b2.moveBall();
+                collision(b1, b2);
+                collision(b1, b3);
+                collision(b2, b3);
+                collision(b4, b1);
+                collision(b4, b2);
+                collision(b4, b3);
+                collision(b5, b1);
+                collision(b5, b2);
+                collision(b5, b3);
+                collision(b5, b4);
+
+                requestAnimationFrame(step);
+            }
+
+
+
+            step();
+
+            //collisions
+            function collision(b1, b2) {
+                var num = 0;
+                num++;
+
+                //Calculate reach of balls
+                var reach = b1.r + b2.r;
+
+                //calculate distance between lines
+                var x2 = b1.x - b2.x;
+                var y2 = b1.y - b2.y;
+                var distance = Math.sqrt(x2 * x2 + y2 * y2);
+
+                if (distance < reach) {
+                    b1.xVel = b1.xVel * -1;
+                    b1.yVel = b1.yVel * -1;
+                    b2.xVel = b2.xVel * -1;
+                    b2.yVel = b2.yVel * -1;
+                } //end if
+            } //end collisions
+
+
+        } //end casino chips
+    </script>
+
+
+
+</body>
+
+</html>
